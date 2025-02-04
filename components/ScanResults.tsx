@@ -1,16 +1,17 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React from "react";
+import { StyleSheet } from "react-native";
 
-import { ExternalLink } from './ExternalLink';
-import { MonoText } from './StyledText';
-import { Text, View } from './Themed';
+import { useNavigation, useRouter, useLocalSearchParams } from "expo-router";
+import { ExternalLink } from "./ExternalLink";
+import { MonoText } from "./StyledText";
+import { Text, View } from "./Themed";
 
-import Colors from '@/constants/Colors';
+import Colors from "@/constants/Colors";
 
-export default function EditScreenInfo({ path }: { path: string }) {
+export default function ScanResultsInfo({ path }: { path: string }) {
   return (
     <View>
-      <View style={styles.getStartedContainer}>
+      {/* <View style={styles.getStartedContainer}>
         <Text
           style={styles.getStartedText}
           lightColor="rgba(0,0,0,0.8)"
@@ -41,14 +42,14 @@ export default function EditScreenInfo({ path }: { path: string }) {
             Tap here if your app doesn't automatically update after making changes
           </Text>
         </ExternalLink>
-      </View>
+      </View> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   getStartedContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginHorizontal: 50,
   },
   homeScreenFilename: {
@@ -61,17 +62,17 @@ const styles = StyleSheet.create({
   getStartedText: {
     fontSize: 17,
     lineHeight: 24,
-    textAlign: 'center',
+    textAlign: "center",
   },
   helpContainer: {
     marginTop: 15,
     marginHorizontal: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   helpLink: {
     paddingVertical: 15,
   },
   helpLinkText: {
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
