@@ -12,7 +12,7 @@ Return the response in the exact JSON format below, ensuring each detected item 
 {
   "freshProduce": [],
   "dairy": [],
-  "meats": [],
+  "meatAndPoultry": [],
   "baking": [],
   "spicesAndSeasonings": [],
   "condimentsAndSauces": [],
@@ -37,12 +37,13 @@ export const extractIngredientsFromImage = async (
     return {
       freshProduce: ["apple", "banana"],
       dairy: ["milk", "cheese"],
-      meats: ["chicken", "beef"],
+      meatAndPoultry: ["chicken", "beef"],
       baking: ["flour", "sugar"],
       spicesAndSeasonings: ["salt", "pepper"],
       condimentsAndSauces: ["ketchup", "mustard"],
       oilsAndFats: ["olive oil", "butter"],
       grainsAndBread: ["bread", "rice"],
+      unknown: [],
     };
   }
 

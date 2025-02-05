@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native";
 import { useNavigation, useRouter, useLocalSearchParams } from "expo-router";
 import { ExternalLink } from "./ExternalLink";
 import { MonoText } from "./StyledText";
-import { Text, View } from "./Themed";
+import { View } from "./Themed";
 
 import Colors from "@/constants/Colors";
 

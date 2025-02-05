@@ -1,4 +1,6 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import "@/global.css";
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import {
   DarkTheme,
   DefaultTheme,
@@ -46,18 +48,35 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <GluestackUIProvider mode="dark">
+      <RootLayoutNav />
+    </GluestackUIProvider>
+  );
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="scan-result" options={{ presentation: "modal" }} />
-      </Stack>
-    </ThemeProvider>
+    <GluestackUIProvider mode="dark">
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="scan-result"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="add-pantry-ingredients"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="add-category-ingredients"
+            options={{ presentation: "modal" }}
+          />
+        </Stack>
+      </ThemeProvider>
+    </GluestackUIProvider>
   );
 }

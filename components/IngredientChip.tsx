@@ -1,16 +1,29 @@
 import React from "react";
-import { Text, View } from "./Themed";
-import { StyleSheet } from "react-native";
+import { View } from "./Themed";
+import { StyleSheet, TouchableOpacity, useColorScheme } from "react-native";
+import { Text } from "@/components/ui/text";
+import { DarkTheme, DefaultTheme } from "@react-navigation/native";
 
 interface Props {
   name: string;
+  onPress?: () => void;
 }
 
-export function FoodChip(props: Props) {
+export function IngredientChip(props: Props) {
+  const scheme = useColorScheme();
+  const { name, onPress } = props;
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{props.name}</Text>
-    </View>
+    <TouchableOpacity
+      style={{
+        ...styles.container,
+        backgroundColor:
+          scheme === "dark" ? DarkTheme.colors.card : DefaultTheme.colors.card,
+      }}
+      onPress={onPress}
+    >
+      <Text size="xl">{props.name}</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -19,11 +32,5 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     margin: 4,
-    // backgroundColor: "#f0f0f0",
-    width: "auto",
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
   },
 });

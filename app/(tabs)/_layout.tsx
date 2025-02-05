@@ -30,8 +30,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Recipes",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "Explore",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="compass" color={color} />
+          ),
           // headerRight: () => (
           //   <Link href="/scan-result" asChild>
           //     <Pressable>
@@ -49,19 +51,26 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="pantry"
+        options={{
+          title: "Pantry",
+          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="favorites"
+        options={{
+          title: "Favorites",
+          tabBarIcon: ({ color }) => <TabBarIcon name="heart" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="scan-ingredients"
         options={{
           title: "Scan",
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="plus-circle" color={color} />
+            <TabBarIcon name="plus-square-o" color={color} />
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="pantry"
-        options={{
-          title: "Pantry",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
     </Tabs>

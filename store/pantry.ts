@@ -5,54 +5,80 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export interface Pantry {
   freshProduce: string[];
   dairy: string[];
-  meats: string[];
+  meatAndPoultry: string[];
   baking: string[];
   spicesAndSeasonings: string[];
   condimentsAndSauces: string[];
   oilsAndFats: string[];
   grainsAndBread: string[];
+  unknown: string[];
 }
 
 export interface PantryStore {
-  foodCategories: Pantry;
-  setFoodCategories: (newCategories: Pantry) => void;
-  clearFoodCategories: () => void;
+  pantryItems: Pantry;
+  setPantryItems: (newItems: Pantry) => void;
+  clearPantry: () => void;
+  removeIngredient: (category: keyof Pantry, ingredient: string) => void;
+  addIngredient: (category: keyof Pantry, ingredient: string[]) => void;
+  clearCategory: (category: keyof Pantry) => void;
 }
 
-const useFoodStore = create<PantryStore, [["zustand/persist", unknown]]>(
+const usePantry = create<PantryStore, [["zustand/persist", unknown]]>(
   persist(
     (set) => ({
-      foodCategories: {
+      pantryItems: {
         freshProduce: [],
         dairy: [],
-        meats: [],
+        meatAndPoultry: [],
         baking: [],
         spicesAndSeasonings: [],
         condimentsAndSauces: [],
         oilsAndFats: [],
         grainsAndBread: [],
+        unknown: [],
       },
-      setFoodCategories: (newCategories: Pantry) =>
-        set({ foodCategories: newCategories }),
-      clearFoodCategories: () =>
+      setPantryItems: (pantryItems: Pantry) => set({ pantryItems }),
+      clearPantry: () =>
         set({
-          foodCategories: {
+          pantryItems: {
             freshProduce: [],
             dairy: [],
-            meats: [],
+            meatAndPoultry: [],
             baking: [],
             spicesAndSeasonings: [],
             condimentsAndSauces: [],
             oilsAndFats: [],
             grainsAndBread: [],
+            unknown: [],
           },
+        }),
+      removeIngredient: (category: keyof Pantry, ingredient: string) =>
+        set((state) => {
+          const newItems = { ...state.pantryItems };
+          newItems[category] = state.pantryItems[category].filter(
+            (item) => item !== ingredient
+          );
+          return { pantryItems: newItems };
+        }),
+      addIngredient: (category: keyof Pantry, ingredient: string[]) =>
+        set((state) => {
+          const newItems = { ...state.pantryItems };
+          newItems[category] = [...state.pantryItems[category], ...ingredient];
+          newItems[category] = [...new Set(newItems[category])];
+          return { pantryItems: newItems };
+        }),
+      clearCategory: (category: keyof Pantry) =>
+        set((state) => {
+          const newItems = { ...state.pantryItems };
+          newItems[category] = [];
+          return { pantryItems: newItems };
         }),
     }),
     {
-      name: "food-storage", // Storage key
+      name: "pantry", // Storage key
       storage: createJSONStorage(() => AsyncStorage), // Use AsyncStorage for persistence
     }
   )
 );
 
-export default useFoodStore;
+export default usePantry;

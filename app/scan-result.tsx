@@ -3,22 +3,23 @@ import {
   Platform,
   StyleSheet,
   ActivityIndicator,
-  Button,
   ScrollView,
 } from "react-native";
+import { Button, ButtonText } from "@/components/ui/button";
 
 import { router, useLocalSearchParams } from "expo-router";
-import { Text, View } from "@/components/Themed";
+import { Text } from "@/components/ui/text";
+import { View } from "@/components/Themed";
 import { useEffect, useState } from "react";
 import { extractIngredientsFromImage } from "@/services/openai";
-import useFoodStore, { Pantry } from "@/store/pantry";
+import usePantry, { Pantry } from "@/store/pantry";
 import { IngredientCategory } from "@/components/IngredientCategory";
-import { FoodChip } from "@/components/IngredientChip";
+import { IngredientChip } from "@/components/IngredientChip";
 
 export default function ScanResults() {
   const [loading, setLoading] = useState(false);
   const [proposedIngredients, setProposedIngredients] = useState<Pantry>();
-  const { setFoodCategories, foodCategories } = useFoodStore();
+  const { setPantryItems, pantryItems } = usePantry();
   const params = useLocalSearchParams();
   const { photoUri } = params;
 
@@ -44,7 +45,7 @@ export default function ScanResults() {
   const importIngredients = () => {
     console.log("importing ingredients");
     if (proposedIngredients) {
-      setFoodCategories(proposedIngredients);
+      setPantryItems(proposedIngredients);
     }
 
     router.replace({
@@ -63,18 +64,23 @@ export default function ScanResults() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <StatusBar style="auto" />
-      <Text>Scan Results</Text>
       {proposedIngredients &&
         Object.keys(proposedIngredients).map((category) => (
           <View key={category}>
             <IngredientCategory title={category}>
-              {(foodCategories as any)[category].map((ingredient: string) => (
-                <FoodChip key={ingredient} name={ingredient} />
-              ))}
+              {(proposedIngredients as any)[category].map(
+                (ingredient: string) => (
+                  <IngredientChip key={ingredient} name={ingredient} />
+                )
+              )}
             </IngredientCategory>
           </View>
         ))}
-      <Button title="Import Ingredients" onPress={importIngredients} />
+      <View style={styles.buttonContainer}>
+        <Button size="xl" onPress={importIngredients}>
+          <ButtonText>Import Ingredients</ButtonText>
+        </Button>
+      </View>
     </ScrollView>
   );
 }
@@ -86,7 +92,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
-    // flex: 1,
-    // justifyContent: "center",
+    justifyContent: "center",
+    alignContent: "center",
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: "column",
+    alignContent: "center",
+    justifyContent: "flex-end",
+    margin: 40,
   },
 });
