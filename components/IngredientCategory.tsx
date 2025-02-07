@@ -68,6 +68,16 @@ export function IngredientCategory(props: Props) {
           </ActionsheetDragIndicatorWrapper>
           <ActionsheetItem
             onPress={() => {
+              if (onAddIngredients) {
+                onAddIngredients();
+              }
+              closeSheet();
+            }}
+          >
+            <ActionsheetItemText size="lg">Add Ingredients</ActionsheetItemText>
+          </ActionsheetItem>
+          <ActionsheetItem
+            onPress={() => {
               if (onClearCategory) {
                 onClearCategory();
               }
@@ -77,16 +87,6 @@ export function IngredientCategory(props: Props) {
             <ActionsheetItemText size="lg">
               Clear Ingredients
             </ActionsheetItemText>
-          </ActionsheetItem>
-          <ActionsheetItem
-            onPress={() => {
-              if (onAddIngredients) {
-                onAddIngredients();
-              }
-              closeSheet();
-            }}
-          >
-            <ActionsheetItemText size="lg">Add Ingredients</ActionsheetItemText>
           </ActionsheetItem>
         </ActionsheetContent>
       </Actionsheet>

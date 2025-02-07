@@ -59,7 +59,7 @@ export default function AddCategoryIngredients() {
 
         <View style={styles.ingredientCategories}>
           {ingredients.map((ingredient, index) => (
-            <View style={styles.ingredients}>
+            <View key={index} style={styles.ingredients}>
               <IngredientChip key={index} name={ingredient} />
             </View>
           ))}

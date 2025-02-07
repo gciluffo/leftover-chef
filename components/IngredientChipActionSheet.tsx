@@ -1,26 +1,3 @@
-/**
- * 
- * Create a function that wraps this ActionSheet. Props will include onDelete pressed
- *  
- * <Actionsheet isOpen={showActionsheet} onClose={handleClose}>
-        <ActionsheetBackdrop />
-        <ActionsheetContent>
-          <ActionsheetDragIndicatorWrapper>
-            <ActionsheetDragIndicator />
-          </ActionsheetDragIndicatorWrapper>
-          <ActionsheetItem onPress={handleClose}>
-            <ActionsheetItemText>
-              Move to different category
-            </ActionsheetItemText>
-          </ActionsheetItem>
-          <ActionsheetItem isDisabled onPress={handleClose}>
-            <ActionsheetItemText>Delete</ActionsheetItemText>
-          </ActionsheetItem>
-        </ActionsheetContent>
-      </Actionsheet>
- * 
- * */
-
 import {
   Actionsheet,
   ActionsheetContent,
@@ -30,18 +7,6 @@ import {
   ActionsheetDragIndicatorWrapper,
   ActionsheetBackdrop,
 } from "@/components/ui/actionsheet";
-import {
-  Select,
-  SelectTrigger,
-  SelectInput,
-  SelectIcon,
-  SelectPortal,
-  SelectBackdrop,
-  SelectContent,
-  SelectDragIndicator,
-  SelectDragIndicatorWrapper,
-  SelectItem,
-} from "@/components/ui/select";
 import { useState } from "react";
 
 interface Props {

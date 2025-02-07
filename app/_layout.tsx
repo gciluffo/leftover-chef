@@ -75,6 +75,7 @@ function RootLayoutNav() {
             name="add-category-ingredients"
             options={{ presentation: "modal" }}
           />
+          <Stack.Screen name="recipe-details" options={{}} />
         </Stack>
       </ThemeProvider>
     </GluestackUIProvider>

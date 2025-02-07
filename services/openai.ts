@@ -89,3 +89,79 @@ export const extractIngredientsFromImage = async (
     throw new Error("Failed to analyze image.");
   }
 };
+
+const RECIPE_PROMT = (ingredients: string[]) => `
+"You are a helpful AI that generates recipe suggestions based on available ingredients. Given a list of these ingredients ${ingredients.join(
+  ","
+)}, return a structured JSON response containing a list of popular recipes that can be made using those ingredients. Each recipe should include the title, description, list of ingredients with their required quantities, step-by-step instructions, estimated preparation time, and the number of servings. You must use ingredients that are typical or traditional for each recipe. Do not replace or swap out core ingredients with alternatives unless they are commonly accepted substitutions in a recipe.
+
+The JSON output must strictly follow this format:
+
+{
+  "recipes": [
+    {
+      "title": "Recipe Name",
+      "description": "A short description of the dish.",
+      "cuisine": "Italian",
+      "dietary_info": ["Vegetarian", "Gluten-Free"],
+      "ingredients": [
+        { "name": "Ingredient 1", "quantity": "1 cup" },
+        { "name": "Ingredient 2", "quantity": "2 tbsp" }
+      ],
+      "instructions": [
+        "Step 1: Do this.",
+        "Step 2: Do that."
+      ],
+      "prep_time_minutes": 30,
+      "servings": 2,
+      "cooking_method": "Baked",
+      "required_equipment": ["Oven", "Mixing Bowl"],
+      "difficulty": "Intermediate",
+      "nutrition": {
+        "calories": 350,
+        "protein": "15g",
+        "fat": "10g",
+        "carbs": "50g"
+      },
+      "meal_category": "Dinner",
+    }
+  ]
+}
+
+Ensure that only well-known and popular recipes are suggested, and ingredients should make sense in the context of the dish. Do not invent random or overly complex dishes. Prioritize recipes that use most of the given ingredients while requiring minimal extra ingredients. Keep the response concise, relevant, and properly formatted as valid JSON."
+`;
+
+export const generateRecipes = async (ingredients: string[]): Promise<any> => {
+  if (!ingredients || ingredients.length === 0) {
+    throw new Error("No ingredients provided.");
+  }
+
+  try {
+    const response = await client.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: RECIPE_PROMT(ingredients),
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!response.choices[0]?.message?.content) {
+      throw new Error("Failed to generate recipes.");
+    }
+
+    const content = response.choices[0]?.message?.content;
+    const jsonString = content.replace(/```json\n|```/g, "");
+    console.log(jsonString);
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.error("Error generating recipes:", error);
+    throw new Error("Failed to generate recipes.");
+  }
+};

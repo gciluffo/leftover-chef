@@ -9,6 +9,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import usePantry, { Pantry } from "@/store/pantry";
 import { categorizeIngredient } from "@/utils/ingredient-categorizer";
 import { IngredientCategory } from "@/components/IngredientCategory";
+import { router } from "expo-router";
 
 export default function AddPantryIngredients() {
   const [input, setInput] = useState<string>("");
@@ -36,7 +37,10 @@ export default function AddPantryIngredients() {
     }
   };
 
-  const addIngredients = () => {};
+  const addIngredients = () => {
+    setPantryItems(ingredients as Pantry);
+    router.back();
+  };
 
   return (
     <>

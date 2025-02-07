@@ -45,6 +45,7 @@ export default function ScanResults() {
   const importIngredients = () => {
     console.log("importing ingredients");
     if (proposedIngredients) {
+      // TODO: Should add logic to display message. Do you want to override your current pantry or merge?
       setPantryItems(proposedIngredients);
     }
 
