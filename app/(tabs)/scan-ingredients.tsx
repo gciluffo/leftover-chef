@@ -1,7 +1,8 @@
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import { useState, useRef } from "react";
-import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { router } from "expo-router";
+import { Button, ButtonText } from "@/components/ui/button";
 
 export default function ScanIngredients() {
   const [facing, setFacing] = useState<CameraType>("back");
@@ -16,9 +17,12 @@ export default function ScanIngredients() {
     return (
       <View style={styles.container}>
         <Text style={styles.message}>
-          We need your permission to show the camera
+          In order to scan your fridge and pantry we need your permission to
+          access the camera
         </Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button size="xl" onPress={requestPermission}>
+          <ButtonText>Request Permissions</ButtonText>
+        </Button>
       </View>
     );
   }
@@ -35,9 +39,6 @@ export default function ScanIngredients() {
           },
         });
       } catch (error) {}
-
-      // console.log({ photo });
-      //   sendPictureToAPI(photo.uri);
     }
   };
 

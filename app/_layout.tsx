@@ -63,10 +63,7 @@ function RootLayoutNav() {
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="scan-result"
-            options={{ presentation: "modal" }}
-          />
+          <Stack.Screen name="scan-result" options={{}} />
           <Stack.Screen
             name="add-pantry-ingredients"
             options={{ presentation: "modal" }}

@@ -16,11 +16,21 @@ import usePantry from "@/store/pantry";
 import { IngredientCategory } from "@/components/IngredientCategory";
 import { IngredientChip } from "@/components/IngredientChip";
 import { Pantry } from "@/models/pantry";
+import MergeIngredientsModal from "@/components/MergeIngredientsModal";
+import { IngredientChipActionSheet } from "@/components/IngredientChipActionSheet";
 
 export default function ScanResults() {
+  const [showIngredientActionSheet, setShowIngredientActionSheet] =
+    useState(false);
+  const [activeIngredient, setActiveIngredient] = useState<{
+    ingredient: string;
+    category: string;
+  } | null>(null);
+  const handleClose = () => setShowIngredientActionSheet(false);
   const [loading, setLoading] = useState(false);
+  const [mergeModalOpen, setMergeModalOpen] = useState(false);
   const [proposedIngredients, setProposedIngredients] = useState<Pantry>();
-  const { setPantryItems } = usePantry();
+  const { setPantryItems, mergePantryItems } = usePantry();
   const params = useLocalSearchParams();
   const { photoUri } = params;
 
@@ -44,15 +54,68 @@ export default function ScanResults() {
   }, []);
 
   const importIngredients = () => {
-    console.log("importing ingredients");
     if (proposedIngredients) {
-      // TODO: Should add logic to display message. Do you want to override your current pantry or merge?
-      setPantryItems(proposedIngredients);
+      setMergeModalOpen(true);
     }
+  };
+
+  const onMergeIngredientsSelected = () => {
+    if (proposedIngredients) mergePantryItems(proposedIngredients);
 
     router.replace({
       pathname: "/pantry",
     });
+  };
+
+  const onReplaceIngredientsSelected = () => {
+    if (proposedIngredients) setPantryItems(proposedIngredients);
+
+    router.replace({
+      pathname: "/pantry",
+    });
+  };
+
+  const onIngredientPressed = (ingredient: string, category: string) => {
+    setActiveIngredient({ ingredient, category });
+    setShowIngredientActionSheet(true);
+  };
+
+  const onIngredientDeleted = () => {
+    if (activeIngredient) {
+      // remove ingredient
+      if (proposedIngredients) {
+        proposedIngredients[activeIngredient.category as keyof Pantry] = (
+          proposedIngredients[
+            activeIngredient.category as keyof Pantry
+          ] as string[]
+        ).filter((i: string) => i !== activeIngredient.ingredient);
+      }
+    }
+    handleClose();
+  };
+
+  const onCategoryChanged = (category: string) => {
+    if (activeIngredient) {
+      // remove
+      if (
+        proposedIngredients &&
+        proposedIngredients[category as keyof Pantry]
+      ) {
+        (proposedIngredients[category as keyof Pantry] as string[]).filter(
+          (i: string) => i !== activeIngredient.ingredient
+        );
+      }
+
+      // add
+      if (proposedIngredients) {
+        proposedIngredients[category as keyof Pantry] = [
+          ...(proposedIngredients[category as keyof Pantry] as string[]),
+          activeIngredient.ingredient,
+        ];
+      }
+    }
+
+    handleClose();
   };
 
   if (loading) {
@@ -72,7 +135,11 @@ export default function ScanResults() {
             <IngredientCategory title={category}>
               {(proposedIngredients as any)[category].map(
                 (ingredient: string) => (
-                  <IngredientChip key={ingredient} name={ingredient} />
+                  <IngredientChip
+                    key={ingredient}
+                    name={ingredient}
+                    onPress={() => onIngredientPressed(ingredient, category)}
+                  />
                 )
               )}
             </IngredientCategory>
@@ -83,6 +150,17 @@ export default function ScanResults() {
           <ButtonText>Import Ingredients</ButtonText>
         </Button>
       </View>
+      <MergeIngredientsModal
+        showModal={mergeModalOpen}
+        onMergeSelected={onMergeIngredientsSelected}
+        onReplaceSelected={onReplaceIngredientsSelected}
+      />
+      <IngredientChipActionSheet
+        onCategoryChange={(category) => onCategoryChanged(category)}
+        onDelete={onIngredientDeleted}
+        isOpen={showIngredientActionSheet}
+        onClose={handleClose}
+      />
     </ScrollView>
   );
 }

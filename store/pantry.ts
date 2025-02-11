@@ -6,6 +6,7 @@ import { Pantry } from "@/models/pantry";
 export interface PantryStore {
   pantryItems: Pantry;
   setPantryItems: (newItems: Pantry) => void;
+  mergePantryItems: (newItems: Pantry) => void;
   clearPantry: () => void;
   removeIngredient: (category: keyof Pantry, ingredient: string) => void;
   addIngredient: (category: keyof Pantry, ingredient: string[]) => void;
@@ -27,6 +28,19 @@ const usePantry = create<PantryStore, [["zustand/persist", unknown]]>(
         leftovers: [],
         unknown: [],
       },
+      mergePantryItems: (newItems: Pantry) =>
+        set((state) => {
+          const mergedItems = { ...state.pantryItems };
+          Object.keys(newItems).forEach((category) => {
+            mergedItems[category as keyof Pantry] = [
+              ...new Set([
+                ...mergedItems[category as keyof Pantry],
+                ...newItems[category as keyof Pantry],
+              ]),
+            ];
+          });
+          return { pantryItems: mergedItems };
+        }),
       setPantryItems: (pantryItems: Pantry) => set({ pantryItems }),
       clearPantry: () =>
         set({

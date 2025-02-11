@@ -1,4 +1,4 @@
-import { Pantry } from "@/store/pantry";
+import { Pantry } from "@/models/pantry";
 import * as FileSystem from "expo-file-system";
 import { OpenAI } from "openai";
 
@@ -43,6 +43,7 @@ export const extractIngredientsFromImage = async (
       condimentsAndSauces: ["ketchup", "mustard"],
       oilsAndFats: ["olive oil", "butter"],
       grainsAndBread: ["bread", "rice"],
+      leftovers: ["pizza", "pasta"],
       unknown: [],
     };
   }

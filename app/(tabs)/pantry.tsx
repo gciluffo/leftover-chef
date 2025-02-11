@@ -20,6 +20,7 @@ export default function Pantry() {
     category: string;
   } | null>(null);
   const handleClose = () => setShowIngredientActionSheet(false);
+
   const { pantryItems, removeIngredient, addIngredient, clearCategory } =
     usePantry();
 

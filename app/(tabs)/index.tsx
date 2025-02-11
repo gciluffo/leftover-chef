@@ -85,9 +85,6 @@ export default function ImportFood() {
           data={recipes}
           refreshing={loading}
           onRefresh={generateRecipes}
-          // ListFooterComponent={
-          //   loading ? <ActivityIndicator size="large" color="#0000ff" /> : null
-          // }
           ItemSeparatorComponent={() => (
             <View
               style={{ marginVertical: 10 }}
