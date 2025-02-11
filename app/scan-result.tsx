@@ -12,14 +12,15 @@ import { Text } from "@/components/ui/text";
 import { View } from "@/components/Themed";
 import { useEffect, useState } from "react";
 import { extractIngredientsFromImage } from "@/services/openai";
-import usePantry, { Pantry } from "@/store/pantry";
+import usePantry from "@/store/pantry";
 import { IngredientCategory } from "@/components/IngredientCategory";
 import { IngredientChip } from "@/components/IngredientChip";
+import { Pantry } from "@/models/pantry";
 
 export default function ScanResults() {
   const [loading, setLoading] = useState(false);
   const [proposedIngredients, setProposedIngredients] = useState<Pantry>();
-  const { setPantryItems, pantryItems } = usePantry();
+  const { setPantryItems } = usePantry();
   const params = useLocalSearchParams();
   const { photoUri } = params;
 

@@ -6,9 +6,10 @@ import { Text } from "@/components/ui/text";
 import { IngredientChip } from "@/components/IngredientChip";
 import { Divider } from "@/components/ui/divider";
 import { Button, ButtonText } from "@/components/ui/button";
-import usePantry, { Pantry } from "@/store/pantry";
+import usePantry from "@/store/pantry";
 import { useLocalSearchParams, router } from "expo-router";
 import { camelToTitleCase } from "@/utils/formatting";
+import { Pantry } from "@/models/pantry";
 
 export default function AddCategoryIngredients() {
   const [input, setInput] = useState<string>("");

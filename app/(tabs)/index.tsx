@@ -7,24 +7,28 @@ import usePantry from "@/store/pantry";
 import { NumberOfIngredientsInPantry } from "@/utils/pantry";
 import { useEffect, useState } from "react";
 import { generateRecipes } from "@/services/openai";
-import useRecipes, { Recipe } from "@/store/recipes";
+import useRecipes from "@/store/recipes";
 import RecipeCard from "@/components/RecipeCard";
 import { router } from "expo-router";
 import RecipeService from "@/services/recipes";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Recipe } from "@/models/recipes";
 
 export default function ImportFood() {
   const [loading, setLoading] = useState(false);
 
   const { pantryItems } = usePantry();
-  const { setRecipes, recipes } = useRecipes();
+  const { setRecipes, recipes, recipePreferences } = useRecipes();
   const numItems = NumberOfIngredientsInPantry(pantryItems);
 
   const generateRecipes = async () => {
     try {
       const ingredients = Object.values(pantryItems).flat();
       setLoading(true);
-      const response = await RecipeService.generateRecipes(ingredients);
+      const response = await RecipeService.generateRecipes(
+        ingredients,
+        recipePreferences
+      );
       setRecipes(response.recipes);
     } catch (error) {
       console.log({ error });
@@ -33,18 +37,21 @@ export default function ImportFood() {
     }
   };
 
-  useEffect(() => {
-    const init = async () => {
-      await generateRecipes();
-    };
+  // useEffect(() => {
+  //   const init = async () => {
+  //     await generateRecipes();
+  //   };
 
-    if (numItems > 2) {
-      init();
-    }
-  }, []);
+  //   if (numItems > 2) {
+  //     init();
+  //   }
+  // }, []);
 
   const onAddPress = async () => {
-    await generateRecipes();
+    // await generateRecipes();
+    router.push({
+      pathname: "/recipe-configuration",
+    });
   };
 
   const onRecipePress = (recipe: Recipe) => {
@@ -56,7 +63,7 @@ export default function ImportFood() {
     });
   };
 
-  if (loading) {
+  if (loading && recipes.length === 0) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -76,6 +83,11 @@ export default function ImportFood() {
         <FlatList
           style={styles.list}
           data={recipes}
+          refreshing={loading}
+          onRefresh={generateRecipes}
+          // ListFooterComponent={
+          //   loading ? <ActivityIndicator size="large" color="#0000ff" /> : null
+          // }
           ItemSeparatorComponent={() => (
             <View
               style={{ marginVertical: 10 }}
@@ -95,7 +107,7 @@ export default function ImportFood() {
         style={styles.fab}
       >
         <FabLabel>
-          <FontAwesome name="magic" size={15} />
+          <FontAwesome name="cog" size={15} />
         </FabLabel>
       </Fab>
     </>

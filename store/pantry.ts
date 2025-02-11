@@ -1,18 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-export interface Pantry {
-  freshProduce: string[];
-  dairy: string[];
-  meatAndPoultry: string[];
-  baking: string[];
-  spicesAndSeasonings: string[];
-  condimentsAndSauces: string[];
-  oilsAndFats: string[];
-  grainsAndBread: string[];
-  unknown: string[];
-}
+import { Pantry } from "@/models/pantry";
 
 export interface PantryStore {
   pantryItems: Pantry;
@@ -35,6 +24,7 @@ const usePantry = create<PantryStore, [["zustand/persist", unknown]]>(
         condimentsAndSauces: [],
         oilsAndFats: [],
         grainsAndBread: [],
+        leftovers: [],
         unknown: [],
       },
       setPantryItems: (pantryItems: Pantry) => set({ pantryItems }),
@@ -49,6 +39,7 @@ const usePantry = create<PantryStore, [["zustand/persist", unknown]]>(
             condimentsAndSauces: [],
             oilsAndFats: [],
             grainsAndBread: [],
+            leftovers: [],
             unknown: [],
           },
         }),

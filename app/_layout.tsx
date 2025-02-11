@@ -76,6 +76,15 @@ function RootLayoutNav() {
             options={{ presentation: "modal" }}
           />
           <Stack.Screen name="recipe-details" options={{}} />
+          <Stack.Screen
+            name="recipe-configuration"
+            options={
+              {
+                // Select does not work in modal mode
+                // presentation: "modal",
+              }
+            }
+          />
         </Stack>
       </ThemeProvider>
     </GluestackUIProvider>

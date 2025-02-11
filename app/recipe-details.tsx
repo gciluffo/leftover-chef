@@ -1,22 +1,29 @@
-import { Image, ScrollView, StyleSheet, View } from "react-native";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
+import {
+  ScrollView,
+  StyleSheet,
+  Touchable,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Text } from "@/components/ui/text";
-import { Box } from "@/components/ui/box";
 import { useLocalSearchParams } from "expo-router";
 import useRecipes from "@/store/recipes";
 import { Divider } from "@/components/ui/divider";
 import React, { useEffect } from "react";
-import { Recipe } from "@/store/recipes";
 import { Heading } from "@/components/ui/heading";
-import Spacer from "@/components/Spacer";
+import Spacer from "@/components/ui/Spacer";
+import { Recipe } from "@/models/recipes";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 export default function RecipeDetails() {
   const [recipe, setRecipe] = React.useState<Recipe | null>(null);
+  const [favorite, setFavorite] = React.useState(false);
   const params = useLocalSearchParams();
   const recipeId = Array.isArray(params.recipeId)
     ? params.recipeId[0]
     : params.recipeId;
-  const { getById } = useRecipes();
+  const { getById, addFavorite, removeFavorite, favoriteRecipes } =
+    useRecipes();
 
   useEffect(() => {
     if (recipeId) {
@@ -25,6 +32,22 @@ export default function RecipeDetails() {
       if (r) setRecipe(r);
     }
   }, [recipeId]);
+
+  useEffect(() => {
+    if (recipe) {
+      setFavorite(favoriteRecipes.some((r) => r.id === recipe.id));
+    }
+  }, [recipe]);
+
+  useEffect(() => {
+    if (favorite && recipe) {
+      addFavorite(recipe);
+    }
+
+    if (!favorite && recipe) {
+      removeFavorite(recipe);
+    }
+  }, [favorite]);
 
   return (
     <ScrollView
@@ -41,7 +64,22 @@ export default function RecipeDetails() {
           <View style={styles.titleContainer}>
             <Heading size="2xl">{recipe.title}</Heading>
           </View>
+          <Spacer />
+          <View style={styles.actions}>
+            <TouchableOpacity onPress={() => setFavorite(!favorite)}>
+              <FontAwesome
+                name="heart"
+                size={30}
+                color={favorite ? "red" : "white"}
+              />
+            </TouchableOpacity>
 
+            {/* <TouchableOpacity>
+              <FontAwesome name="share" size={30} color="white" />
+            </TouchableOpacity> */}
+          </View>
+
+          <Spacer />
           <Text size="md">{recipe.description}</Text>
           <Spacer />
           <Divider />
@@ -101,6 +139,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    flexWrap: "wrap",
   },
   stepContainer: {
     gap: 8,
@@ -112,5 +151,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: "absolute",
+  },
+  actions: {
+    flexDirection: "row",
+    gap: 8,
+    // justifyContent: "flex-end",
   },
 });

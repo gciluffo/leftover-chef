@@ -2,64 +2,33 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import uuid from "react-native-uuid";
+import { Recipe, RecipePreferences } from "@/models/recipes";
 
-export interface RecipeGenerationParameters {
-  numOfIngredients: number;
-  dietaryRestrictions: "gluten-free" | "vegetarian" | "vegan" | "none";
-  mealCategory: "snack" | "breakfast" | "lunch" | "dinner";
-  cuisine:
-    | "American"
-    | "Chinese"
-    | "Indian"
-    | "Italian"
-    | "Japanese"
-    | "Mexican"
-    | "Thai"
-    | "BBQ";
-}
-
-export interface Recipe {
-  id: string;
-  title: string;
-  description: string;
-  cuisine: string;
-  dietary_info: string[]; // e.g., ["Vegetarian", "Gluten-Free"]
-  ingredients: Ingredient[];
-  instructions: string[];
-  prep_time_minutes: number;
-  servings: number;
-  cooking_method: string; // e.g., "Baked", "Fried"
-  required_equipment: string[]; // e.g., ["Oven", "Mixing Bowl"]
-  difficulty: "Beginner" | "Intermediate" | "Advanced";
-  estimated_cost: string; // e.g., "$10"
-  nutrition: Nutrition;
-  ratings: number; // e.g., 4.5
-  meal_category: "Breakfast" | "Lunch" | "Dinner" | "Snack";
-  image_url: string;
-}
-
-export interface Ingredient {
-  name: string;
-  quantity: string; // e.g., "1 cup", "200g"
-}
-
-export interface Nutrition {
-  calories: number;
-  protein: string; // e.g., "15g"
-  fat: string; // e.g., "10g"
-  carbs: string; // e.g., "50g"
-}
-
-export interface PantryStore {
+export interface RecipeStore {
   recipes: Recipe[];
+  recipePreferences: RecipePreferences;
+  favoriteRecipes: Recipe[];
+  setRecipePreferences: (preferences: RecipePreferences) => void;
   setRecipes: (newRecipes: Recipe[]) => void;
   getById: (id: string) => Recipe | undefined;
+  addFavorite: (recipe: Recipe) => void;
+  removeFavorite: (recipe: Recipe) => void;
+  setFavoriteRecipes: (recipes: Recipe[]) => void;
 }
 
-const useRecipes = create<PantryStore, [["zustand/persist", unknown]]>(
+const useRecipes = create<RecipeStore, [["zustand/persist", unknown]]>(
   persist(
     (set, get) => ({
       recipes: [],
+      favoriteRecipes: [],
+      recipePreferences: {
+        difficulty: "intermediate",
+        dietaryPreferences: [],
+        mealCategory: "any",
+      },
+      setRecipePreferences: (preferences: RecipePreferences) => {
+        set({ recipePreferences: preferences });
+      },
       setRecipes: (recipes: Recipe[]) => {
         const recipesWithId = recipes.map((recipe) => ({
           ...recipe,
@@ -70,6 +39,22 @@ const useRecipes = create<PantryStore, [["zustand/persist", unknown]]>(
       getById: (id: string) => {
         const { recipes } = get();
         return recipes.find((recipe) => recipe.id === id);
+      },
+      setFavoriteRecipes: (recipes: Recipe[]) => {
+        set({ favoriteRecipes: recipes });
+      },
+      addFavorite: (recipe: Recipe) => {
+        const { favoriteRecipes } = get();
+        if (!favoriteRecipes.some((r) => r.id === recipe.id)) {
+          set({ favoriteRecipes: [...favoriteRecipes, recipe] });
+        }
+      },
+      removeFavorite: (recipe: Recipe) => {
+        set({
+          favoriteRecipes: get().favoriteRecipes.filter(
+            (r) => r.id !== recipe.id
+          ),
+        });
       },
     }),
     {

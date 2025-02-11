@@ -1,13 +1,30 @@
+import { Recipe, RecipePreferences } from "@/models/recipes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { OpenAI } from "openai";
 
 const SYSTEM_PROMPT = `
-"You are a helpful AI that generates recipe suggestions based on available ingredients.
-Given a list of ingredients, return a structured JSON response containing a list of popular recipes (at least 5) that can be made using those ingredients.
-Each recipe should include the title, description, list of ingredients with their required quantities, step-by-step instructions, estimated preparation time, and the number of servings.
-You must use ingredients that are typical or traditional for each recipe. Do not replace or swap out core ingredients with alternatives unless they are commonly accepted substitutions in a recipe.
+You are a helpful AI that generates high-quality recipe suggestions based on provided ingredients and user preferences. 
 
-The JSON output must strictly follow this format:
+## **Requirements**
+- Generate a list of recipes that match the provided ingredients and user preferences.
+- If a dietary restriction applies, **strictly exclude** any restricted ingredients. 
+  - **Only suggest substitutions** when they are commonly used in that type of recipe.
+- Ensure that each recipe matches the **requested difficulty level**:
+  - "Simple" = minimal steps, easy techniques.
+  - "Intermediate" = moderate steps, basic cooking techniques.
+  - "Advanced" = detailed preparation, possibly requiring advanced skills or specialized equipment.
+- Ensure the recipes fit the **requested meal category** (e.g., "breakfast" recipes should be suitable for breakfast).
+
+## **Strict Rules**
+- **ONLY** use the ingredients that have been provided. Do not add additional ingredients.
+- If a required ingredient is missing for a traditional recipe, **adapt the recipe** using only the available ingredients.
+- **DO NOT** suggest recipes that conflict with dietary restrictions.
+- **DO NOT** suggest recipes that require ingredients not provided. Unless the preferences allow for recipes with missing ingredients.
+- **Do not** invent substitutions unless they are commonly used and fit dietary restrictions.
+- If a recipe is impossible with the given ingredients, **combine them creatively** to form a complete dish.
+
+## **Response Format**
+The JSON output **must strictly follow** this format:
 {
   "recipes": [
     {
@@ -34,17 +51,10 @@ The JSON output must strictly follow this format:
         "fat": "10g",
         "carbs": "50g"
       },
-      "meal_category": "Dinner",
+      "meal_category": "Dinner"
     }
   ]
 }
-
-Ensure that only well-known and popular recipes are suggested, and ingredients should make sense in the context of the dish.
-Do not invent random or overly complex dishes. 
-Prioritize recipes that use most of the given ingredients while requiring minimal extra ingredients.
-Make sure to include precise cooking instructions. 
-Make sure to maximize flavor and variety in the suggested recipes. 
-Keep the response concise, relevant, and properly formatted as valid JSON."
 `;
 
 const CACHE_KEY_PREFIX = "recipes_";
@@ -69,13 +79,16 @@ class RecipeService {
     await AsyncStorage.setItem(key, JSON.stringify(data));
   }
 
-  static async generateRecipes(ingredients: string[]): Promise<any> {
+  static async generateRecipes(
+    ingredients: string[],
+    recipePreferences: RecipePreferences
+  ): Promise<{ recipes: Recipe[] }> {
     if (!ingredients || ingredients.length === 0) {
       throw new Error("No ingredients provided.");
     }
 
-    const cachedRecipes = await this.getCachedRecipes(ingredients);
-    if (cachedRecipes) return cachedRecipes;
+    // const cachedRecipes = await this.getCachedRecipes(ingredients);
+    // if (cachedRecipes) return cachedRecipes;
 
     try {
       console.log("making api request");
@@ -85,7 +98,10 @@ class RecipeService {
           { role: "system", content: SYSTEM_PROMPT },
           {
             role: "user",
-            content: [{ type: "text", text: ingredients.join(", ") }],
+            content: JSON.stringify({
+              ingredients: ingredients,
+              preferences: recipePreferences,
+            }),
           },
         ],
       });
@@ -98,7 +114,7 @@ class RecipeService {
       const jsonString = content.replace(/```json\n|```/g, "");
       const parsedData = JSON.parse(jsonString);
 
-      await this.cacheRecipes(ingredients, parsedData);
+      // await this.cacheRecipes(ingredients, parsedData);
       return parsedData;
     } catch (error) {
       console.error("Error generating recipes:", error);

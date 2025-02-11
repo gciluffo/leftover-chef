@@ -1,16 +1,16 @@
 import { StyleSheet } from "react-native";
 
 import { View } from "@/components/Themed";
-import { Text } from "@/components/ui/text";
-import usePantry, { Pantry as PantryType } from "@/store/pantry";
+import usePantry from "@/store/pantry";
 import { IngredientCategory } from "@/components/IngredientCategory";
 import { IngredientChip } from "@/components/IngredientChip";
 import { ScrollView } from "react-native";
-import { Fab, FabLabel, FabIcon } from "@/components/ui/fab";
-import { router, useLocalSearchParams } from "expo-router";
+import { Fab, FabLabel } from "@/components/ui/fab";
+import { router } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useState } from "react";
 import { IngredientChipActionSheet } from "@/components/IngredientChipActionSheet";
+import { Pantry as PantryType } from "@/models/pantry";
 
 export default function Pantry() {
   const [showIngredientActionSheet, setShowIngredientActionSheet] =

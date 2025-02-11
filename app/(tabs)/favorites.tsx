@@ -1,36 +1,75 @@
-import { StyleSheet } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
 
-import EditScreenInfo from "@/components/ScanResults";
+import { Fab, FabLabel, FabIcon } from "@/components/ui/fab";
 import { View } from "@/components/Themed";
 import { Text } from "@/components/ui/text";
+import usePantry from "@/store/pantry";
+import { NumberOfIngredientsInPantry } from "@/utils/pantry";
+import { useEffect, useState } from "react";
+import { generateRecipes } from "@/services/openai";
+import useRecipes from "@/store/recipes";
+import RecipeCard from "@/components/RecipeCard";
+import { router } from "expo-router";
+import RecipeService from "@/services/recipes";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Recipe } from "@/models/recipes";
 
-export default function Pantry() {
+export default function Favorites() {
+  const { favoriteRecipes, setFavoriteRecipes } = useRecipes();
+
+  // setFavoriteRecipes([]);
+
+  const onRecipePress = (recipe: Recipe) => {
+    router.push({
+      pathname: "/recipe-details",
+      params: {
+        recipeId: recipe.id,
+      },
+    });
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <EditScreenInfo path="app/(tabs)/two.tsx" />
-    </View>
+    <>
+      {!favoriteRecipes.length ? (
+        <View style={styles.loadingContainer}>
+          <Text size="xl" bold>
+            Browse some recipes and add them to your favorites!
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          style={styles.list}
+          data={favoriteRecipes}
+          ItemSeparatorComponent={() => (
+            <View
+              style={{ marginVertical: 10 }}
+              lightColor="#eee"
+              darkColor="rgba(255,255,255,0.1)"
+            />
+          )}
+          renderItem={({ item }) => (
+            <RecipeCard recipe={item} onPress={() => onRecipePress(item)} />
+          )}
+        />
+      )}
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  list: {
+    width: "100%",
+    padding: 10,
+  },
+  loadingContainer: {
+    margin: 8,
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+  fab: {
+    position: "absolute",
+    right: 20,
+    bottom: 20,
   },
 });
