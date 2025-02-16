@@ -61,6 +61,7 @@ export default function RecipeConfiguration() {
     { preference: "paleo", isSelected: false },
     { preference: "sulfite-free", isSelected: false },
     { preference: "low-fodmap", isSelected: false },
+    { preference: "high-protein", isSelected: false },
   ]);
 
   const { recipePreferences, setRecipePreferences } = useRecipes();
@@ -94,7 +95,6 @@ export default function RecipeConfiguration() {
       .map((preference) => preference.preference);
 
     setRecipePreferences({
-      //   ...recipePreferences,
       difficulty,
       mealCategory,
       dietaryPreferences: selectedDietaryPreferences,

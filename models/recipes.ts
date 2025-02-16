@@ -10,7 +10,8 @@ export type DietaryPreference =
   | "whole30"
   | "seafood-free"
   | "sulfite-free"
-  | "low-fodmap";
+  | "low-fodmap"
+  | "high-protein";
 
 export type MealCategory =
   | "any"

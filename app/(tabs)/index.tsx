@@ -1,12 +1,16 @@
-import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+} from "react-native";
 
-import { Fab, FabLabel, FabIcon } from "@/components/ui/fab";
+import { Fab, FabLabel } from "@/components/ui/fab";
 import { View } from "@/components/Themed";
 import { Text } from "@/components/ui/text";
 import usePantry from "@/store/pantry";
 import { NumberOfIngredientsInPantry } from "@/utils/pantry";
-import { useEffect, useState } from "react";
-import { generateRecipes } from "@/services/openai";
+import { useEffect, useRef, useState } from "react";
 import useRecipes from "@/store/recipes";
 import RecipeCard from "@/components/RecipeCard";
 import { router } from "expo-router";
@@ -14,11 +18,12 @@ import RecipeService from "@/services/recipes";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Recipe } from "@/models/recipes";
 
-export default function ImportFood() {
+export default function Explore() {
   const [loading, setLoading] = useState(false);
 
   const { pantryItems } = usePantry();
   const { setRecipes, recipes, recipePreferences } = useRecipes();
+  const isFirstRender = useRef(true);
   const numItems = NumberOfIngredientsInPantry(pantryItems);
 
   const generateRecipes = async () => {
@@ -37,18 +42,17 @@ export default function ImportFood() {
     }
   };
 
-  // useEffect(() => {
-  //   const init = async () => {
-  //     await generateRecipes();
-  //   };
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
 
-  //   if (numItems > 2) {
-  //     init();
-  //   }
-  // }, []);
+    setRecipes([]);
+    generateRecipes();
+  }, [recipePreferences]);
 
   const onAddPress = async () => {
-    // await generateRecipes();
     router.push({
       pathname: "/recipe-configuration",
     });

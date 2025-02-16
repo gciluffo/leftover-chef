@@ -1,19 +1,16 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Touchable,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useLocalSearchParams } from "expo-router";
 import useRecipes from "@/store/recipes";
 import { Divider } from "@/components/ui/divider";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Heading } from "@/components/ui/heading";
 import Spacer from "@/components/ui/Spacer";
 import { Recipe } from "@/models/recipes";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import usePantry from "@/store/pantry";
+import { getMissingIngredients } from "@/utils/ingredient-compare";
+import MissingIngredientsChip from "@/components/MissingIngredientChip";
 
 export default function RecipeDetails() {
   const [recipe, setRecipe] = React.useState<Recipe | null>(null);
@@ -24,6 +21,7 @@ export default function RecipeDetails() {
     : params.recipeId;
   const { getById, addFavorite, removeFavorite, favoriteRecipes } =
     useRecipes();
+  const { pantryItems } = usePantry();
 
   useEffect(() => {
     if (recipeId) {
@@ -49,16 +47,21 @@ export default function RecipeDetails() {
     }
   }, [favorite]);
 
+  const missingIngredients = useMemo(() => {
+    if (!recipe) return [];
+
+    const recipeIngredients = recipe.ingredients.map((ingredient) =>
+      ingredient.name.toLowerCase()
+    );
+    const pantryIngredients = Object.values(pantryItems)
+      .flat()
+      .map((item) => item.toLowerCase());
+
+    return getMissingIngredients(pantryIngredients, recipeIngredients);
+  }, [pantryItems, recipe]);
+
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      // headerImage={
-      //   <Image
-      //     source={require("@/assets/images/recipe.jpg")}
-      //     style={styles.reactLogo}
-      //   />
-      // }
-    >
+    <ScrollView contentContainerStyle={styles.container}>
       {recipe && (
         <View>
           <View style={styles.titleContainer}>
@@ -73,10 +76,6 @@ export default function RecipeDetails() {
                 color={favorite ? "red" : "white"}
               />
             </TouchableOpacity>
-
-            {/* <TouchableOpacity>
-              <FontAwesome name="share" size={30} color="white" />
-            </TouchableOpacity> */}
           </View>
 
           <Spacer />
@@ -87,13 +86,11 @@ export default function RecipeDetails() {
           <View>
             <Text size="lg">Cuisine: {recipe.cuisine}</Text>
             <Text size="lg">
-              Difficulty: {recipe.difficulty} | Estimated Cost:{" "}
+              Difficulty: {recipe.difficulty}
               {recipe.estimated_cost}
             </Text>
-            <Text size="lg">
-              Prep Time: {recipe.prep_time_minutes} mins | Servings:{" "}
-              {recipe.servings}
-            </Text>
+            <Text size="lg">Prep Time: {recipe.prep_time_minutes} mins</Text>
+            <Text size="lg">Servings: {recipe.servings}</Text>
             <Text size="lg">Cooking Method: {recipe.cooking_method}</Text>
             <Text size="lg">
               Required Equipment: {recipe.required_equipment?.join(", ")}
@@ -102,7 +99,21 @@ export default function RecipeDetails() {
           <Spacer />
           <Divider />
           <Spacer />
+          {missingIngredients.length > 0 && (
+            <>
+              <Heading size="xl">Missing Ingredients</Heading>
+              <View style={styles.missingIngredientChipContainer}>
+                {missingIngredients.map((ingredient, index) => (
+                  <MissingIngredientsChip key={index} title={ingredient} />
+                ))}
+              </View>
+              <Spacer />
+              <Divider />
+              <Spacer />
+            </>
+          )}
           <Heading size="xl">Ingredients</Heading>
+          <Spacer />
           {recipe.ingredients.map((ingredient, index) => (
             <Text key={index} size="lg">
               - {ingredient.name} {ingredient.quantity.replace(",", "")}
@@ -155,6 +166,11 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: "row",
     gap: 8,
-    // justifyContent: "flex-end",
+  },
+  missingIngredientChipContainer: {
+    padding: 5,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
   },
 });

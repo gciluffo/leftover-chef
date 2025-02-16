@@ -11,7 +11,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/Themed";
 import { useEffect, useState } from "react";
-import { extractIngredientsFromImage } from "@/services/openai";
+import { extractIngredientsFromImage } from "@/services/image-to-text";
 import usePantry from "@/store/pantry";
 import { IngredientCategory } from "@/components/IngredientCategory";
 import { IngredientChip } from "@/components/IngredientChip";

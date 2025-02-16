@@ -6,7 +6,7 @@ import { Text } from "@/components/ui/text";
 import usePantry from "@/store/pantry";
 import { NumberOfIngredientsInPantry } from "@/utils/pantry";
 import { useEffect, useState } from "react";
-import { generateRecipes } from "@/services/openai";
+import { generateRecipes } from "@/services/image-to-text";
 import useRecipes from "@/store/recipes";
 import RecipeCard from "@/components/RecipeCard";
 import { router } from "expo-router";

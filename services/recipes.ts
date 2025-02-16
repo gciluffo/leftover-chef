@@ -6,7 +6,7 @@ const SYSTEM_PROMPT = `
 You are a helpful AI that generates high-quality recipe suggestions based on provided ingredients and user preferences. 
 
 ## **Requirements**
-- Generate a list of recipes that match the provided ingredients and user preferences.
+- Generate a list of AT LEAST 3 recipes that match the provided ingredients and user preferences.
 - If a dietary restriction applies, **strictly exclude** any restricted ingredients. 
   - **Only suggest substitutions** when they are commonly used in that type of recipe.
 - Ensure that each recipe matches the **requested difficulty level**:
@@ -16,6 +16,7 @@ You are a helpful AI that generates high-quality recipe suggestions based on pro
 - Ensure the recipes fit the **requested meal category** (e.g., "breakfast" recipes should be suitable for breakfast).
 
 ## **Strict Rules**
+- Provide at least **3 recipes** that match the user's preferences.
 - **ONLY** use the ingredients that have been provided. Do not add additional ingredients.
 - If a required ingredient is missing for a traditional recipe, **adapt the recipe** using only the available ingredients.
 - **DO NOT** suggest recipes that conflict with dietary restrictions.
@@ -91,7 +92,7 @@ class RecipeService {
     // if (cachedRecipes) return cachedRecipes;
 
     try {
-      console.log("making api request");
+      console.log("making api request to open ai");
       const response = await this.client.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [
@@ -107,11 +108,14 @@ class RecipeService {
       });
 
       if (!response.choices[0]?.message?.content) {
+        console.log(response);
         throw new Error("Failed to generate recipes.");
       }
 
+      console.log("response", response.choices[0]?.message?.content);
       const content = response.choices[0]?.message?.content;
       const jsonString = content.replace(/```json\n|```/g, "");
+      console.log(jsonString);
       const parsedData = JSON.parse(jsonString);
 
       // await this.cacheRecipes(ingredients, parsedData);

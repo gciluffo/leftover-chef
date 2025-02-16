@@ -12,6 +12,7 @@ import {
   ActionsheetDragIndicatorWrapper,
   ActionsheetBackdrop,
 } from "@/components/ui/actionsheet";
+import { Card } from "@/components/ui/card";
 import { camelToTitleCase } from "@/utils/formatting";
 
 interface Props {
