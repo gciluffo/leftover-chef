@@ -46,10 +46,10 @@ export interface RecipePreferences {
   difficulty: Difficulty;
   dietaryPreferences: DietaryPreference[];
   mealCategory: MealCategory;
+  equipment?: Equipment[];
   cuisine?: Cuisine;
   includeRecipesWithMissingIngredients?: boolean;
   prepTime?: number;
-  equipment?: Equipment;
 }
 
 export interface Recipe {

@@ -4,7 +4,7 @@ export function getMissingIngredients(
   pantryIngredients: string[],
   inputIngredients: string[]
 ): string[] {
-  const scoreThreshold = 2;
+  const scoreThreshold = 4;
 
   const missingIngredients = [];
 

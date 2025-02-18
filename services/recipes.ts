@@ -3,26 +3,23 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { OpenAI } from "openai";
 
 const SYSTEM_PROMPT = `
-You are a helpful AI that generates high-quality recipe suggestions based on provided ingredients and user preferences. 
+You are a helpful chef AI that generates high-quality recipe suggestions based on provided ingredients and user preferences. 
+The user will provide you with a json object containing a list of ingredients ("ingredients") and recipe preferences ("preferences").
 
 ## **Requirements**
-- Generate a list of AT LEAST 3 recipes that match the provided ingredients and user preferences.
-- If a dietary restriction applies, **strictly exclude** any restricted ingredients. 
-  - **Only suggest substitutions** when they are commonly used in that type of recipe.
-- Ensure that each recipe matches the **requested difficulty level**:
-  - "Simple" = minimal steps, easy techniques.
-  - "Intermediate" = moderate steps, basic cooking techniques.
-  - "Advanced" = detailed preparation, possibly requiring advanced skills or specialized equipment.
-- Ensure the recipes fit the **requested meal category** (e.g., "breakfast" recipes should be suitable for breakfast).
+- If a dietary restriction is provided in preferences.dietaryPreferences, **strictly exclude** any restricted ingredients. 
+  - Dietary restrictions include: "gluten-free", "dairy-free", "vegetarian", "vegan", "peanut-free", "soy-free", "ketogenic", "paleo", "whole30", "seafood-free", "sulfite-free", "low-fodmap", "high-protein".
+- Ensure that each recipe matches the requested difficulty level in preferences.difficulty:
+  - "simple" = minimal steps, easy techniques.
+  - "intermediate" = moderate steps, basic cooking techniques.
+  - "advanced" = detailed preparation, possibly requiring advanced skills or specialized equipment.
+- Ensure the recipes fit the requested meal category in preferences.mealType (e.g., "breakfast" recipes should be suitable for breakfast).
+- Unless specified in preferences.equipment, assume the user has basic kitchen equipment (e.g., stove, oven, pots, pans).
 
 ## **Strict Rules**
 - Provide at least **3 recipes** that match the user's preferences.
 - **ONLY** use the ingredients that have been provided. Do not add additional ingredients.
-- If a required ingredient is missing for a traditional recipe, **adapt the recipe** using only the available ingredients.
 - **DO NOT** suggest recipes that conflict with dietary restrictions.
-- **DO NOT** suggest recipes that require ingredients not provided. Unless the preferences allow for recipes with missing ingredients.
-- **Do not** invent substitutions unless they are commonly used and fit dietary restrictions.
-- If a recipe is impossible with the given ingredients, **combine them creatively** to form a complete dish.
 
 ## **Response Format**
 The JSON output **must strictly follow** this format:
@@ -32,7 +29,7 @@ The JSON output **must strictly follow** this format:
       "title": "Recipe Name",
       "description": "A short description of the dish.",
       "cuisine": "Italian",
-      "dietary_info": ["Vegetarian", "Gluten-Free"],
+      "dietary_info": ["Vegetarian", "Gluten-Free", "Vegan", ...],
       "ingredients": [
         { "name": "Ingredient 1", "quantity": "1 cup" },
         { "name": "Ingredient 2", "quantity": "2 tbsp" }
@@ -112,10 +109,8 @@ class RecipeService {
         throw new Error("Failed to generate recipes.");
       }
 
-      console.log("response", response.choices[0]?.message?.content);
       const content = response.choices[0]?.message?.content;
       const jsonString = content.replace(/```json\n|```/g, "");
-      console.log(jsonString);
       const parsedData = JSON.parse(jsonString);
 
       // await this.cacheRecipes(ingredients, parsedData);
