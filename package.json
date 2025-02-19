@@ -1,5 +1,5 @@
 {
-  "name": "fridge-snap",
+  "name": "leftover-chef",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -58,7 +58,8 @@
     "react-native-web": "~0.19.13",
     "tailwindcss": "^3.4.17",
     "uuid": "^11.0.5",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.3",
+    "expo-image": "~2.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

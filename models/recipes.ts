@@ -47,9 +47,6 @@ export interface RecipePreferences {
   dietaryPreferences: DietaryPreference[];
   mealCategory: MealCategory;
   equipment?: Equipment[];
-  cuisine?: Cuisine;
-  includeRecipesWithMissingIngredients?: boolean;
-  prepTime?: number;
 }
 
 export interface Recipe {
@@ -69,6 +66,8 @@ export interface Recipe {
   nutrition: Nutrition;
   ratings: number; // e.g., 4.5
   meal_category: MealCategory;
+  externalRecipeInfo: ExternalRecipe[];
+  genericTitle: string;
 }
 
 export interface Ingredient {
@@ -81,4 +80,43 @@ export interface Nutrition {
   protein: string; // e.g., "15g"
   fat: string; // e.g., "10g"
   carbs: string; // e.g., "50g"
+}
+
+export interface ExternalRecipe {
+  name: string;
+  description: string;
+  author: string;
+  source: string;
+  image: string;
+  ratings: {
+    average: number;
+    count: number;
+  };
+  prepTime: string;
+  cookTime: string;
+  totalTime: string;
+  servings: string;
+  categories: string[];
+  cuisine: string;
+  ingredients: {
+    section: string;
+    items: string[];
+  }[];
+  instructions: string[];
+  nutrition: {
+    calories?: string;
+    carbohydrates?: string;
+    cholesterol?: string;
+    fiber?: string;
+    protein?: string;
+    saturatedFat?: string;
+    sodium?: string;
+    sugar?: string;
+    fat?: string;
+    unsaturatedFat?: string;
+  };
+  reviews: {
+    author: string;
+    review: string;
+  }[];
 }

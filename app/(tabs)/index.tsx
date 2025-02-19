@@ -14,9 +14,10 @@ import { useEffect, useRef, useState } from "react";
 import useRecipes from "@/store/recipes";
 import RecipeCard from "@/components/RecipeCard";
 import { router } from "expo-router";
-import RecipeService from "@/services/recipes";
+import RecipeService from "@/services/recipes-ai";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Recipe } from "@/models/recipes";
+import { searchRecipeName } from "@/services/recipe-api";
 
 export default function Explore() {
   const [loading, setLoading] = useState(false);
@@ -34,6 +35,19 @@ export default function Explore() {
         ingredients,
         recipePreferences
       );
+
+      // get any external info
+      for (const r of response.recipes) {
+        console.log("searching for", r.genericTitle);
+        const externalRecipes = await searchRecipeName(r.genericTitle);
+
+        // console.log("info", externalRecipes);
+        if (externalRecipes?.recipes?.length > 0) {
+          console.log("match!");
+          r.externalRecipeInfo = externalRecipes.recipes;
+        }
+      }
+
       setRecipes(response.recipes);
     } catch (error) {
       console.log({ error });
@@ -48,8 +62,8 @@ export default function Explore() {
       return;
     }
 
-    setRecipes([]);
-    generateRecipes();
+    // setRecipes([]);
+    // generateRecipes();
   }, [recipePreferences]);
 
   const onAddPress = async () => {
@@ -119,6 +133,7 @@ const styles = StyleSheet.create({
   list: {
     width: "100%",
     padding: 10,
+    marginBottom: 10,
   },
   loadingContainer: {
     margin: 8,

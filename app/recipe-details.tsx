@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useLocalSearchParams } from "expo-router";
@@ -11,6 +12,12 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import usePantry from "@/store/pantry";
 import { getMissingIngredients } from "@/utils/ingredient-compare";
 import MissingIngredientsChip from "@/components/MissingIngredientChip";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+
+const defaultImageUrl =
+  "https://www.deadendbbq.com/wp-content/uploads/2022/06/blog-header.jpg";
+const blurhash =
+  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 export default function RecipeDetails() {
   const [recipe, setRecipe] = React.useState<Recipe | null>(null);
@@ -60,8 +67,33 @@ export default function RecipeDetails() {
     return getMissingIngredients(pantryIngredients, recipeIngredients);
   }, [pantryItems, recipe]);
 
+  const imageUrl = useMemo(() => {
+    if (!recipe) {
+      return "";
+    }
+
+    const externalRecipe = recipe.externalRecipeInfo[0];
+
+    if (!externalRecipe) {
+      return defaultImageUrl;
+    }
+
+    return externalRecipe.image;
+  }, [recipe]);
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+      headerImage={
+        <Image
+          style={styles.image}
+          source={imageUrl}
+          placeholder={{ blurhash }}
+          // contentFit="cover"
+          transition={1000}
+        />
+      }
+    >
       {recipe && (
         <View>
           <View style={styles.titleContainer}>
@@ -138,7 +170,10 @@ export default function RecipeDetails() {
           ))}
         </View>
       )}
-    </ScrollView>
+    </ParallaxScrollView>
+    // <ScrollView contentContainerStyle={styles.container}>
+
+    // </ScrollView>
   );
 }
 
@@ -172,5 +207,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
+  },
+  image: {
+    flex: 1,
+    width: "100%",
+    height: 200,
+    borderRadius: 5,
+    backgroundColor: "#0553",
   },
 });

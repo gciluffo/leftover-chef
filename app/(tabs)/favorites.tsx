@@ -1,23 +1,13 @@
-import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
-
-import { Fab, FabLabel, FabIcon } from "@/components/ui/fab";
+import { FlatList, StyleSheet } from "react-native";
 import { View } from "@/components/Themed";
 import { Text } from "@/components/ui/text";
-import usePantry from "@/store/pantry";
-import { NumberOfIngredientsInPantry } from "@/utils/pantry";
-import { useEffect, useState } from "react";
-import { generateRecipes } from "@/services/image-to-text";
 import useRecipes from "@/store/recipes";
 import RecipeCard from "@/components/RecipeCard";
 import { router } from "expo-router";
-import RecipeService from "@/services/recipes";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Recipe } from "@/models/recipes";
 
 export default function Favorites() {
   const { favoriteRecipes, setFavoriteRecipes } = useRecipes();
-
-  // setFavoriteRecipes([]);
 
   const onRecipePress = (recipe: Recipe) => {
     router.push({
