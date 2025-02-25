@@ -61,8 +61,9 @@ function RootLayoutNav() {
   return (
     <GluestackUIProvider mode="dark">
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
+        <Stack initialRouteName="(tabs)">
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(top-tabs)" options={{ title: "Recipe" }} />
           <Stack.Screen name="scan-result" options={{}} />
           <Stack.Screen
             name="add-pantry-ingredients"
@@ -72,7 +73,6 @@ function RootLayoutNav() {
             name="add-category-ingredients"
             options={{ presentation: "modal" }}
           />
-          <Stack.Screen name="recipe-details" options={{}} />
           <Stack.Screen
             name="recipe-configuration"
             options={

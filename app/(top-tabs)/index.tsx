@@ -1,4 +1,3 @@
-import { Image } from "expo-image";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useLocalSearchParams } from "expo-router";
@@ -12,14 +11,29 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import usePantry from "@/store/pantry";
 import { getMissingIngredients } from "@/utils/ingredient-compare";
 import MissingIngredientsChip from "@/components/MissingIngredientChip";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
+import {
+  MaterialTopTabNavigationEventMap,
+  MaterialTopTabNavigationOptions,
+  createMaterialTopTabNavigator,
+} from "@react-navigation/material-top-tabs";
+import { withLayoutContext } from "expo-router";
+import { ParamListBase, TabNavigationState } from "@react-navigation/native";
+
+const { Navigator } = createMaterialTopTabNavigator();
+
+export const MaterialTopTabs = withLayoutContext<
+  MaterialTopTabNavigationOptions,
+  typeof Navigator,
+  TabNavigationState<ParamListBase>,
+  MaterialTopTabNavigationEventMap
+>(Navigator);
 
 const defaultImageUrl =
   "https://www.deadendbbq.com/wp-content/uploads/2022/06/blog-header.jpg";
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
-export default function RecipeDetails() {
+export default function TabOneScreen() {
   const [recipe, setRecipe] = React.useState<Recipe | null>(null);
   const [favorite, setFavorite] = React.useState(false);
   const params = useLocalSearchParams();
@@ -67,33 +81,8 @@ export default function RecipeDetails() {
     return getMissingIngredients(pantryIngredients, recipeIngredients);
   }, [pantryItems, recipe]);
 
-  const imageUrl = useMemo(() => {
-    if (!recipe) {
-      return "";
-    }
-
-    const externalRecipe = recipe.externalRecipeInfo[0];
-
-    if (!externalRecipe) {
-      return defaultImageUrl;
-    }
-
-    return externalRecipe.image;
-  }, [recipe]);
-
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-      headerImage={
-        <Image
-          style={styles.image}
-          source={imageUrl}
-          placeholder={{ blurhash }}
-          // contentFit="cover"
-          transition={1000}
-        />
-      }
-    >
+    <ScrollView contentContainerStyle={styles.container}>
       {recipe && (
         <View>
           <View style={styles.titleContainer}>
@@ -170,16 +159,16 @@ export default function RecipeDetails() {
           ))}
         </View>
       )}
-    </ParallaxScrollView>
-    // <ScrollView contentContainerStyle={styles.container}>
-
-    // </ScrollView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    marginTop: 20,
+    margin: 10,
+    paddingBottom: 100,
+    alignItems: "center",
   },
   titleContainer: {
     flexDirection: "row",

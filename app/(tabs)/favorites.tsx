@@ -11,7 +11,7 @@ export default function Favorites() {
 
   const onRecipePress = (recipe: Recipe) => {
     router.push({
-      pathname: "/recipe-details",
+      pathname: "/(top-tabs)",
       params: {
         recipeId: recipe.id,
       },

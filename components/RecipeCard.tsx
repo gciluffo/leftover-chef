@@ -61,6 +61,10 @@ function RecipeCard({ recipe, onPress }: Props) {
   }, [recipe]);
 
   const imageUrl = useMemo(() => {
+    if (!recipe) {
+      return defaultImageUrl;
+    }
+
     const externalRecipe = recipe.externalRecipeInfo[0];
 
     if (!externalRecipe) {
