@@ -1,13 +1,8 @@
 import { ScrollView, StyleSheet } from "react-native";
-import { Input, InputField } from "@/components/ui/input";
 import { View } from "@/components/Themed";
-import { useState } from "react";
 import { Text } from "@/components/ui/text";
-import { IngredientChip } from "@/components/IngredientChip";
 import { Divider } from "@/components/ui/divider";
 import { Button, ButtonText } from "@/components/ui/button";
-import { categorizeIngredient } from "@/utils/ingredient-categorizer";
-import { IngredientCategory } from "@/components/IngredientCategory";
 import { router } from "expo-router";
 import Spacer from "@/components/ui/Spacer";
 import { HStack } from "@/components/ui/hstack";
@@ -23,7 +18,6 @@ import {
   Select,
   SelectTrigger,
   SelectInput,
-  SelectIcon,
   SelectPortal,
   SelectBackdrop,
   SelectContent,
@@ -31,7 +25,6 @@ import {
   SelectDragIndicatorWrapper,
   SelectItem,
 } from "@/components/ui/select";
-import { ChevronDownIcon } from "@/components/ui/icon";
 import { Switch } from "@/components/ui/switch";
 import colors from "tailwindcss/colors";
 import React from "react";

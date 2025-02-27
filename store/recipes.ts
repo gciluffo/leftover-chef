@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import uuid from "react-native-uuid";
-import { Recipe, RecipePreferences } from "@/models/recipes";
+import { ExternalRecipe, Recipe, RecipePreferences } from "@/models/recipes";
 
 export interface RecipeStore {
   recipes: Recipe[];
@@ -11,6 +11,7 @@ export interface RecipeStore {
   setRecipePreferences: (preferences: RecipePreferences) => void;
   setRecipes: (newRecipes: Recipe[]) => void;
   getById: (id: string) => Recipe | undefined;
+  getExternalRecipeById: (id: string) => ExternalRecipe | undefined;
   addFavorite: (recipe: Recipe) => void;
   removeFavorite: (recipe: Recipe) => void;
   setFavoriteRecipes: (recipes: Recipe[]) => void;
@@ -30,15 +31,30 @@ const useRecipes = create<RecipeStore, [["zustand/persist", unknown]]>(
         set({ recipePreferences: preferences });
       },
       setRecipes: (recipes: Recipe[]) => {
-        const recipesWithId = recipes.map((recipe) => ({
-          ...recipe,
-          id: uuid.v4(),
-        }));
+        const recipesWithId = recipes.map((recipe) => {
+          const id = uuid.v4();
+          const externalRecipesWithId = recipe.externalRecipeInfo?.map((r) => ({
+            ...r,
+            id: uuid.v4(),
+          }));
+          return {
+            ...recipe,
+            id,
+            externalRecipeInfo: externalRecipesWithId,
+          };
+        });
         set({ recipes: recipesWithId });
       },
       getById: (id: string) => {
         const { recipes } = get();
         return recipes.find((recipe) => recipe.id === id);
+      },
+      getExternalRecipeById: (id: string) => {
+        const { recipes } = get();
+        return recipes
+          .map((recipe) => recipe.externalRecipeInfo)
+          .flat()
+          .find((recipe) => recipe.id === id);
       },
       setFavoriteRecipes: (recipes: Recipe[]) => {
         set({ favoriteRecipes: recipes });

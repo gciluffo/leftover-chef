@@ -36,16 +36,19 @@ export default function Explore() {
         recipePreferences
       );
 
-      // get any external info
-      for (const r of response.recipes) {
-        console.log("searching for", r.genericTitle);
-        const externalRecipes = await searchRecipeName(r.genericTitle);
+      try {
+        for (const r of response.recipes) {
+          console.log("searching for", r.genericTitle);
+          const externalRecipes = await searchRecipeName(r.genericTitle);
 
-        // console.log("info", externalRecipes);
-        if (externalRecipes?.recipes?.length > 0) {
-          console.log("match!");
-          r.externalRecipeInfo = externalRecipes.recipes;
+          // console.log("info", externalRecipes);
+          if (externalRecipes?.recipes?.length > 0) {
+            console.log("match!");
+            r.externalRecipeInfo = externalRecipes.recipes;
+          }
         }
+      } catch (error) {
+        console.error("error getting external recipes", error);
       }
 
       setRecipes(response.recipes);

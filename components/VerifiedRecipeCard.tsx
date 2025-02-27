@@ -31,7 +31,12 @@ function StarRating(props: { rating: number; reviews: number }) {
   return (
     <View style={styles.starContainer}>
       {arr.map((r, i) => (
-        <FontAwesome name="star" size={20} color={r ? "yellow" : "black"} />
+        <FontAwesome
+          name="star"
+          size={20}
+          color={r ? "yellow" : "black"}
+          key={i}
+        />
       ))}
       <Text>({props.reviews} reviews)</Text>
     </View>
@@ -61,7 +66,7 @@ export default function VerifiedRecipeCard({ recipe, onPress }: Props) {
         <Heading size="xl">{recipe.name}</Heading>
         <Text>{recipe.description}</Text>
         <Text>{getDomainFromUrl(recipe.source)}</Text>
-        <Text>Prep time: {recipe.prepTime.slice(2, 4)} minutes</Text>
+        <Text>Total time {recipe.totalTime.slice(2, 4)} minutes</Text>
         <StarRating rating={5} reviews={recipe.ratings.count} />
       </Card>
     </TouchableOpacity>

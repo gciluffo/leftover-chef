@@ -82,6 +82,7 @@ function RootLayoutNav() {
               }
             }
           />
+          <Stack.Screen name="verified-recipe-details" />
         </Stack>
       </ThemeProvider>
     </GluestackUIProvider>

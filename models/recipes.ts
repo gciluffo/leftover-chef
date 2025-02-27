@@ -83,6 +83,7 @@ export interface Nutrition {
 }
 
 export interface ExternalRecipe {
+  id: string;
   name: string;
   description: string;
   author: string;

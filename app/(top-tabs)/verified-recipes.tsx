@@ -5,12 +5,14 @@ import useRecipes from "@/store/recipes";
 import React, { useEffect, useMemo } from "react";
 import VerifiedRecipeCard from "@/components/VerifiedRecipeCard";
 import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 
 export default function VerifiedRecipesScreen() {
   const [recipe, setRecipe] = React.useState<Recipe | null>(null);
 
   const p = useNavigation();
-  const recipeId = p?.getState()?.routes[0].params?.recipeId;
+  const recipeId = (p?.getState()?.routes[0].params as { recipeId: string })
+    ?.recipeId;
   const { getById } = useRecipes();
 
   useEffect(() => {
@@ -38,12 +40,12 @@ export default function VerifiedRecipesScreen() {
   }
 
   const onPress = (r: ExternalRecipe) => {
-    // router.push({
-    //   pathname: "/(top-tabs)",
-    //   params: {
-    //     recipeId: recipe.id,
-    //   },
-    // });
+    router.push({
+      pathname: "/verified-recipe-details",
+      params: {
+        externalRecipeId: r.id,
+      },
+    });
   };
 
   return (

@@ -1,82 +1,49 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "@/components/ui/text";
-import { useLocalSearchParams } from "expo-router";
+import { ExternalPathString, Link, useLocalSearchParams } from "expo-router";
 import useRecipes from "@/store/recipes";
 import { Divider } from "@/components/ui/divider";
 import React, { useEffect, useMemo } from "react";
 import { Heading } from "@/components/ui/heading";
 import Spacer from "@/components/ui/Spacer";
-import { Recipe } from "@/models/recipes";
+import { ExternalRecipe } from "@/models/recipes";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import usePantry from "@/store/pantry";
-import { getMissingIngredients } from "@/utils/ingredient-compare";
 import MissingIngredientsChip from "@/components/MissingIngredientChip";
 
-export default function AiRecipeDetails() {
-  const [recipe, setRecipe] = React.useState<Recipe | null>(null);
-  const [favorite, setFavorite] = React.useState(false);
+export default function VerifiedRecipeDetails() {
+  const [recipe, setRecipe] = React.useState<ExternalRecipe | null>(null);
   const params = useLocalSearchParams();
-  const recipeId = Array.isArray(params.recipeId)
-    ? params.recipeId[0]
-    : params.recipeId;
-  const { getById, addFavorite, removeFavorite, favoriteRecipes } =
-    useRecipes();
-  const { pantryItems } = usePantry();
+  const recipeId = Array.isArray(params.externalRecipeId)
+    ? params.externalRecipeId[0]
+    : params.externalRecipeId;
+  const { getExternalRecipeById } = useRecipes();
 
   useEffect(() => {
-    if (recipeId) {
-      const r = getById(recipeId);
+    if (recipeId && !recipe) {
+      const r = getExternalRecipeById(recipeId);
 
       if (r) setRecipe(r);
     }
   }, [recipeId]);
 
-  useEffect(() => {
-    if (recipe) {
-      setFavorite(favoriteRecipes.some((r) => r.id === recipe.id));
-    }
+  const ingredients = useMemo(() => {
+    return recipe?.ingredients.map((ingredient) => ingredient.items).flat();
   }, [recipe]);
 
-  useEffect(() => {
-    if (favorite && recipe) {
-      addFavorite(recipe);
-    }
-
-    if (!favorite && recipe) {
-      removeFavorite(recipe);
-    }
-  }, [favorite]);
-
-  const missingIngredients = useMemo(() => {
-    if (!recipe) return [];
-
-    const recipeIngredients = recipe.ingredients.map((ingredient) =>
-      ingredient.name.toLowerCase()
-    );
-    const pantryIngredients = Object.values(pantryItems)
-      .flat()
-      .map((item) => item.toLowerCase());
-
-    return getMissingIngredients(pantryIngredients, recipeIngredients);
-  }, [pantryItems, recipe]);
+  const missingIngredients = [] as any;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {recipe && (
         <View>
           <View style={styles.titleContainer}>
-            <Heading size="2xl">{recipe.title}</Heading>
+            <Heading size="2xl">{recipe.name}</Heading>
           </View>
+          <Link href={recipe.source as ExternalPathString}>
+            <Text size="lg">View Recipe </Text>
+            <FontAwesome name="external-link" size={20} />
+          </Link>
           <Spacer />
-          <View style={styles.actions}>
-            <TouchableOpacity onPress={() => setFavorite(!favorite)}>
-              <FontAwesome
-                name="heart"
-                size={30}
-                color={favorite ? "red" : "white"}
-              />
-            </TouchableOpacity>
-          </View>
 
           <Spacer />
           <Text size="md">{recipe.description}</Text>
@@ -86,15 +53,9 @@ export default function AiRecipeDetails() {
           <View>
             <Text size="lg">Cuisine: {recipe.cuisine}</Text>
             <Text size="lg">
-              Difficulty: {recipe.difficulty}
-              {recipe.estimated_cost}
+              Total time {recipe.totalTime.slice(2, 4)} minutes
             </Text>
-            <Text size="lg">Prep Time: {recipe.prep_time_minutes} mins</Text>
             <Text size="lg">Servings: {recipe.servings}</Text>
-            <Text size="lg">Cooking Method: {recipe.cooking_method}</Text>
-            <Text size="lg">
-              Required Equipment: {recipe.required_equipment?.join(", ")}
-            </Text>
           </View>
           <Spacer />
           <Divider />
@@ -103,7 +64,7 @@ export default function AiRecipeDetails() {
             <>
               <Heading size="xl">Missing Ingredients</Heading>
               <View style={styles.missingIngredientChipContainer}>
-                {missingIngredients.map((ingredient, index) => (
+                {missingIngredients.map((ingredient: string, index: number) => (
                   <MissingIngredientsChip key={index} title={ingredient} />
                 ))}
               </View>
@@ -114,9 +75,9 @@ export default function AiRecipeDetails() {
           )}
           <Heading size="xl">Ingredients</Heading>
           <Spacer />
-          {recipe.ingredients.map((ingredient, index) => (
+          {ingredients?.map((ingredient, index) => (
             <Text key={index} size="lg">
-              - {ingredient.name} {ingredient.quantity.replace(",", "")}
+              - {ingredient}
             </Text>
           ))}
           <Spacer />
@@ -126,7 +87,7 @@ export default function AiRecipeDetails() {
           <Text size="lg">Calories: {recipe.nutrition.calories}</Text>
           <Text size="lg">Protein: {recipe.nutrition.protein}</Text>
           <Text size="lg">Fat: {recipe.nutrition.fat}</Text>
-          <Text size="lg">Carbs: {recipe.nutrition.carbs}</Text>
+          <Text size="lg">Carbs: {recipe.nutrition.carbohydrates}</Text>
           <Spacer />
           <Divider />
           <Spacer />
