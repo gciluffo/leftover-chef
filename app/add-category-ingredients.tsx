@@ -10,6 +10,7 @@ import usePantry from "@/store/pantry";
 import { useLocalSearchParams, router } from "expo-router";
 import { camelToTitleCase } from "@/utils/formatting";
 import { Pantry } from "@/models/pantry";
+import Spacer from "@/components/ui/Spacer";
 
 export default function AddCategoryIngredients() {
   const [input, setInput] = useState<string>("");
@@ -39,16 +40,14 @@ export default function AddCategoryIngredients() {
         <Text size="3xl">
           {camelToTitleCase(Array.isArray(category) ? category[0] : category)}
         </Text>
-        <Text size="sm" style={{ marginTop: 10, width: "95%" }}>
+        <Spacer />
+        <Text size="sm" style={{ width: "95%" }}>
           Type in your ingredients. The more accurate the description of the
           ingredient the better recipe results you will get.
         </Text>
 
-        <Input
-          style={{ width: "95%", marginTop: 20 }}
-          variant="outline"
-          size="xl"
-        >
+        <Spacer />
+        <Input style={{ width: "95%" }} variant="outline" size="xl">
           <InputField
             placeholder="Type an ingredient. Tap return to add"
             value={input}

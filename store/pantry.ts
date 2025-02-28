@@ -21,7 +21,7 @@ const usePantry = create<PantryStore, [["zustand/persist", unknown]]>(
         dairy: [],
         meatAndPoultry: [],
         baking: [],
-        spicesAndSeasonings: [],
+        spicesAndSeasonings: ["salt", "pepper"],
         condimentsAndSauces: [],
         oilsAndFats: [],
         grainsAndBread: [],

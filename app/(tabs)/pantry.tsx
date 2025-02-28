@@ -11,8 +11,13 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useState } from "react";
 import { IngredientChipActionSheet } from "@/components/IngredientChipActionSheet";
 import { Pantry as PantryType } from "@/models/pantry";
+import MultiOptionFAB from "@/components/FloatingActionsButton";
+import { BlurView } from "expo-blur";
+import ClearPantryModal from "@/components/ClearPantryModal";
 
 export default function Pantry() {
+  const [clearModalOpen, setClearModalOpen] = useState(false);
+  const [isBlurred, setIsBlurred] = useState(false);
   const [showIngredientActionSheet, setShowIngredientActionSheet] =
     useState(false);
   const [activeIngredient, setActiveIngredient] = useState<{
@@ -21,8 +26,13 @@ export default function Pantry() {
   } | null>(null);
   const handleClose = () => setShowIngredientActionSheet(false);
 
-  const { pantryItems, removeIngredient, addIngredient, clearCategory } =
-    usePantry();
+  const {
+    pantryItems,
+    removeIngredient,
+    addIngredient,
+    clearCategory,
+    clearPantry,
+  } = usePantry();
 
   const onAddPress = () => {
     router.push({
@@ -70,7 +80,7 @@ export default function Pantry() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <>
       <ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
         <View style={styles.ingredientsContainer}>
           {pantryItems &&
@@ -103,31 +113,48 @@ export default function Pantry() {
         </View>
       </ScrollView>
 
-      <Fab
-        placement="bottom right"
-        onPress={onAddPress}
-        size="lg"
-        style={styles.fab}
-      >
-        <FabLabel>
-          <FontAwesome name="plus" size={15} />
-        </FabLabel>
-      </Fab>
+      {isBlurred && <BlurView intensity={30} style={StyleSheet.absoluteFill} />}
 
+      <MultiOptionFAB
+        onExpanded={(val) => setIsBlurred(val)}
+        actions={[
+          {
+            iconName: "plus",
+            text: "Add To Pantry",
+            onPress: () => onAddPress(),
+          },
+          {
+            iconName: "trash",
+            text: "Clear Pantry",
+            onPress: () => {
+              setClearModalOpen(true);
+            },
+          },
+        ]}
+      />
+
+      <ClearPantryModal
+        showModal={clearModalOpen}
+        onCancelSelected={() => setClearModalOpen(false)}
+        onClearSelected={() => {
+          clearPantry();
+          setClearModalOpen(false);
+        }}
+      />
       <IngredientChipActionSheet
         onCategoryChange={(category) => onCategoryChanged(category)}
         onDelete={onIngredientDeleted}
         isOpen={showIngredientActionSheet}
         onClose={handleClose}
       />
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   ingredientsContainer: {
     margin: 8,
-    marginBottom: 50,
+    marginBottom: 0,
   },
   fab: {
     position: "absolute",

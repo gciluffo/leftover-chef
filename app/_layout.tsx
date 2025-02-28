@@ -64,23 +64,25 @@ function RootLayoutNav() {
         <Stack initialRouteName="(tabs)">
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(top-tabs)" options={{ title: "Recipe" }} />
-          <Stack.Screen name="scan-result" options={{}} />
+          <Stack.Screen
+            name="scan-result"
+            options={{
+              title: "Scan Results",
+            }}
+          />
           <Stack.Screen
             name="add-pantry-ingredients"
-            options={{ presentation: "modal" }}
+            options={{ presentation: "modal", title: "Add Ingredients" }}
           />
           <Stack.Screen
             name="add-category-ingredients"
-            options={{ presentation: "modal" }}
+            options={{ presentation: "modal", title: "Add Ingredients" }}
           />
           <Stack.Screen
             name="recipe-configuration"
-            options={
-              {
-                // Select does not work in modal mode
-                // presentation: "modal",
-              }
-            }
+            options={{
+              title: "Recipe Preferences",
+            }}
           />
           <Stack.Screen name="verified-recipe-details" />
         </Stack>

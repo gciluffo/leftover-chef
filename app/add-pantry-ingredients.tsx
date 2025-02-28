@@ -11,11 +11,12 @@ import { categorizeIngredient } from "@/utils/ingredient-categorizer";
 import { IngredientCategory } from "@/components/IngredientCategory";
 import { router } from "expo-router";
 import { Pantry } from "@/models/pantry";
+import Spacer from "@/components/ui/Spacer";
 
 export default function AddPantryIngredients() {
   const [input, setInput] = useState<string>("");
   const [ingredients, setIngredients] = useState<Partial<Pantry>>({});
-  const { setPantryItems } = usePantry();
+  const { mergePantryItems } = usePantry();
 
   const handleAddIngredient = () => {
     if (input.trim()) {
@@ -39,7 +40,7 @@ export default function AddPantryIngredients() {
   };
 
   const addIngredients = () => {
-    setPantryItems(ingredients as Pantry);
+    mergePantryItems(ingredients as Pantry);
     router.back();
   };
 
@@ -49,17 +50,15 @@ export default function AddPantryIngredients() {
         <Text size="3xl">Whats In</Text>
         <Divider style={{ width: "40%" }} />
         <Text size="3xl">Your Pantry</Text>
-        <Text size="sm" style={{ marginTop: 10, width: "95%" }}>
+        <Spacer />
+        <Text size="sm">
           Type in your ingredients. We will try to categorize your ingredients
-          as best we can. You can drag and drop an ingredient into any category
-          you want.
+          as best we can. The more specific the ingredient the better recipe
+          results you will get.
         </Text>
 
-        <Input
-          style={{ width: "95%", marginTop: 20 }}
-          variant="outline"
-          size="xl"
-        >
+        <Spacer />
+        <Input variant="outline" size="xl">
           <InputField
             placeholder="Type an ingredient. Tap return to add"
             value={input}

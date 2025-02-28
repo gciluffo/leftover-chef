@@ -10,7 +10,7 @@ import { View } from "@/components/Themed";
 import { Text } from "@/components/ui/text";
 import usePantry from "@/store/pantry";
 import { NumberOfIngredientsInPantry } from "@/utils/pantry";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import useRecipes from "@/store/recipes";
 import RecipeCard from "@/components/RecipeCard";
 import { router } from "expo-router";
@@ -18,6 +18,8 @@ import RecipeService from "@/services/recipes-ai";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Recipe } from "@/models/recipes";
 import { searchRecipeName } from "@/services/recipe-api";
+import { Button, ButtonText } from "@/components/ui/button";
+import Spacer from "@/components/ui/Spacer";
 
 export default function Explore() {
   const [loading, setLoading] = useState(false);
@@ -25,7 +27,11 @@ export default function Explore() {
   const { pantryItems } = usePantry();
   const { setRecipes, recipes, recipePreferences } = useRecipes();
   const isFirstRender = useRef(true);
-  const numItems = NumberOfIngredientsInPantry(pantryItems);
+
+  const enoughIngredients = useMemo(() => {
+    const numItems = NumberOfIngredientsInPantry(pantryItems);
+    return numItems >= 6;
+  }, [pantryItems]);
 
   const generateRecipes = async () => {
     try {
@@ -65,8 +71,10 @@ export default function Explore() {
       return;
     }
 
-    // setRecipes([]);
-    // generateRecipes();
+    if (enoughIngredients) {
+      // setRecipes([]);
+      // generateRecipes();
+    }
   }, [recipePreferences]);
 
   const onAddPress = async () => {
@@ -94,11 +102,19 @@ export default function Explore() {
 
   return (
     <>
-      {numItems < 3 ? (
+      {!enoughIngredients ? (
         <View style={styles.loadingContainer}>
-          <Text size="xl" bold>
+          <Text size="xl" bold style={{ textAlign: "center" }}>
             Add some items to your pantry to see recipes here!
           </Text>
+          <Spacer />
+          <Button
+            size="xl"
+            onPress={() => router.push({ pathname: "/pantry" })}
+          >
+            <ButtonText>Go To Pantry</ButtonText>
+            <FontAwesome name="long-arrow-right" size={20} />
+          </Button>
         </View>
       ) : (
         <FlatList
@@ -125,7 +141,7 @@ export default function Explore() {
         style={styles.fab}
       >
         <FabLabel>
-          <FontAwesome name="cog" size={15} />
+          <FontAwesome name="cog" size={18} />
         </FabLabel>
       </Fab>
     </>
